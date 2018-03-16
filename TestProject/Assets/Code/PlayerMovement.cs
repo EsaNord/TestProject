@@ -5,14 +5,20 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField]
     private float _moveSpeed = 5f;
     [SerializeField]
+    private float _jumpSpeed = 10f;
+    [SerializeField]
+    private float _gravity = 20f;
+    [SerializeField]
     private Transform _playerTransform;
 
     private CharacterController _charCont;
-    private Vector3 _movement;    
+    private Vector3 _movement;
+    private Animator _playerAnimator;
 
     private void Awake()
     {
         _charCont = GetComponent<CharacterController>();
+        _playerAnimator = GetComponentInChildren<Animator>();
     }
 
     private void FixedUpdate()
@@ -22,29 +28,36 @@ public class PlayerMovement : MonoBehaviour
 
     private void Move()
     {        
-        // Reseting movement vector to prevent sliding.
-        _movement = Vector3.zero;
-
-        _movement = new Vector3(-Input.GetAxis("Vertical"), 0, Input.GetAxis("Horizontal"));
-
-        if (_movement != Vector3.zero)
+        if (_charCont.isGrounded)
         {
-            Vector3 newRotation = _movement;
-            transform.rotation = Quaternion.LookRotation(newRotation);
-            _playerTransform.rotation = Quaternion.LookRotation(newRotation);
+            _movement = new Vector3(-Input.GetAxis("Vertical"), 0, Input.GetAxis("Horizontal"));
 
-            float offsetY = _playerTransform.eulerAngles.y;
-            _playerTransform.eulerAngles = new Vector3(_playerTransform.eulerAngles.x,
-                offsetY + 45, _playerTransform.eulerAngles.z);
+            if (_movement != Vector3.zero)
+            {
+                Vector3 newRotation = _movement;
+                transform.rotation = Quaternion.LookRotation(newRotation);
+                _playerTransform.rotation = Quaternion.LookRotation(newRotation);
 
-            _charCont.Move((transform.forward + transform.right) * _moveSpeed * Time.deltaTime);
+                float offsetY = _playerTransform.eulerAngles.y;
+                _playerTransform.eulerAngles = new Vector3(_playerTransform.eulerAngles.x,
+                    offsetY + 45, _playerTransform.eulerAngles.z);
 
-            // Move animation.
-        } 
-        
-        else
-        {
-            // Idle animations.
-        }            
+                _playerAnimator.SetBool("Moving", true);
+                _movement = transform.forward + transform.right;
+                _movement *= _moveSpeed;
+            }
+            else
+            {
+                _playerAnimator.SetBool("Moving", false);
+            }
+
+            if (Input.GetButton("Jump"))
+            {
+                _movement.y = _jumpSpeed;
+            }
+        }
+
+        _movement.y -= _gravity * Time.deltaTime;
+        _charCont.Move(_movement * Time.deltaTime);
     }
 }
