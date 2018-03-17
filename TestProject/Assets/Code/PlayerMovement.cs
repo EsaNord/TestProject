@@ -21,7 +21,7 @@ public class PlayerMovement : MonoBehaviour
         _playerAnimator = GetComponentInChildren<Animator>();
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         Move();
     }
@@ -55,6 +55,10 @@ public class PlayerMovement : MonoBehaviour
             {
                 _movement.y = _jumpSpeed;
             }
+        }
+        else
+        {
+            _playerAnimator.SetBool("Moving", false);
         }
 
         _movement.y -= _gravity * Time.deltaTime;
