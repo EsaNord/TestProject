@@ -12,6 +12,7 @@ public class OrbitLookAt : MonoBehaviour
     public float angle;
     public Vector3 dirToTarget;
     public Vector3 dirToChild;
+    public Vector3 offset;
 
     private void Update()
     {
@@ -28,7 +29,7 @@ public class OrbitLookAt : MonoBehaviour
 
         transform.localPosition = new Vector3(xPos, transform.localPosition.y, ZPos);
 
-        cube.LookAt(parent);
-        cube.localEulerAngles = new Vector3(0, angle, 0);
+        cube.LookAt(target);
+        cube.localEulerAngles = new Vector3(offset.x, offset.y + angle, offset.z);
     }
 }
