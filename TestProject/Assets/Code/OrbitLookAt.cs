@@ -16,8 +16,8 @@ public class OrbitLookAt : MonoBehaviour
     private void Update()
     {
         dirToTarget = target.position - parent.position;
+        dirToTarget = Vector3.ProjectOnPlane(dirToTarget, parent.up);
         dirToChild = parent.position - transform.position;
-        dirToTarget.y = 0;
 
         diffAngle = Vector3.SignedAngle(dirToTarget, parent.forward, -parent.up);
 
